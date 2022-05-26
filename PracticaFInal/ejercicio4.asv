@@ -1,0 +1,53 @@
+clear all, close all
+
+load x_signal.mat
+
+fs=20000;
+t= (0:1/fs:1)';
+%a)Modulacion
+A=1;
+dt= 1/fs;
+sumatorio=cumsum(x);%sumatorio de la formula
+k=2000;
+fase= k*dt*sumatorio;
+
+%calculo de I y Q
+I= A*cos(fase);
+Q= A*sin(fase);
+
+%portadora fc
+fc= 2000;
+IQ= (I.*cos(2*pi*fc*t)) - (Q.*sin(2*pi*fc*t));
+
+%B) Demulacion: Aplicacion
+[I2, Q2]=demodulador(IQ,2000,0.0,fs);
+
+%reconstruir fasor
+R= complex(I2, Q2);
+%fase
+fase= angle(R);
+DerFase= diff(fase);
+figure(3)
+plot(t(1:end-1),DerFase)
+%Fase retocada
+prod= 0*R(1:end-1);
+n= length(R);
+for k=2:n
+    prod(k-1)=R(k)*conj(R(k-1));
+end
+fase2= angle(prod);
+difFase2= diff(fase2);
+figure(4)
+plot(t(1:end-2),difFase2)
+
+%fase derivada
+n= length(I2);
+resI2=[];
+for i=2:n
+    %Para el punto inicial
+    if i==2
+        resI2(i-1)=I2(i)-I2(i-1);
+    %si estamos en el ultimo punto
+    elseif i==n
+        resI
+end
